@@ -1,6 +1,8 @@
 #include <iostream>
 #include "graph.cpp"
 #include <string>
+#include <fstream>
+#include <sstream>
 
 using namespace std;
 struct usuario{
@@ -13,6 +15,39 @@ struct usuario{
 
 int main(){
     graph::digraph g;
+    ifstream arquivo("Usuarios.txt");
+    string linha;
+
+    if (arquivo.is_open()) {
+        while(getline(arquivo, linha)){
+            istringstream iss(linha);
+            string nome, email, telefone, cidade, datadenascimento;
+            getline(iss, email, ',');
+            getline(iss, nome, ',');
+            getline(iss, datadenascimento, ',');
+            getline(iss, telefone, ',');
+            getline(iss, cidade);
+            g.insert_node(email, nome, datadenascimento, telefone, cidade);
+        }
+        arquivo.close();
+    }
+    ifstream arquivo2("Links.txt");
+    string linha2;
+    if (arquivo2.is_open()) {
+        while(getline(arquivo2, linha2)){
+            istringstream iss2(linha2);
+            string email1, email2;
+            getline(iss2, email1, ',');
+            getline(iss2, email2);
+                if(g.insert_link(email1, email2)){
+                    cout << "link inserido" << endl;
+                    continue;
+                }
+        }
+        arquivo2.close();
+    }
+
+
     while(true){
         cout << "Ola, seja bem vindo ao modo administrador FriendZone, sua rede social de amizades!" << endl;
         cout << "\tPara iniciar, o que deseja fazer?" << endl;
@@ -24,8 +59,9 @@ int main(){
         cout << "5 PARA CONSULTAR DADOS DE UM USUARIO" << endl;
         cout << "6 PARA EXCLUIR USUARIO" << endl;
         cout << "7 PARA VERIFICAR CAMINHO ENTRE USUARIOS" << endl;
-        cout << "8 PARA EXPORTAR REDE" << endl;
+        cout << "8 PARA EXPORTAR REDE PARA ARQUIVO DOT" << endl;
         cout << "9 PARA INFORMAÇÕES SOBRE A REDE" << endl;
+        cout << "0 PARA SAIR" << endl;
         int p;
         cin >> p;
         usuario u;
@@ -33,18 +69,19 @@ int main(){
             case 1:
                 cout << "Informe o e-mail do usuario que deseja cadastrar: ";
                 cin >> u.email;
+                cin.ignore();
                 if(g.existe(u.email)){
-                    cout << "E-mail ja ccleaadastrado!" << endl;
+                    cout << "E-mail ja cadastrado!" << endl;
                     break;
                 }
                 cout << "Informe o nome: ";
-                cin >> u.nome;
+                getline(cin, u.nome);
                 cout << "Informe a data de nascimento, no formato dd/mm/yyyy: ";
-                cin >> u.datadenascimento;
+                getline(cin, u.datadenascimento);
                 cout << "Informe o numero de telefone: ";
-                cin >> u.telefone;
+                getline(cin, u.telefone);
                 cout << "Informe a cidade onde reside: ";
-                cin >> u.cidade;
+                getline(cin, u.cidade);
                 if(g.insert_node(u.email, u.nome, u.datadenascimento, u.telefone, u.cidade)){
                     cout << "Usuario inserido!" << endl;
                 }
@@ -108,25 +145,42 @@ int main(){
                     cout << "Digite o e-mail do usuário que deseja excluir: ";
                     cin >> email;
                     g.showuser(email);
-                    cout << "Tem certeza que deseja excluir esse usuário? Y/N";
+                    cout << "Tem certeza que deseja excluir esse usuário? Y/N ";
                     cin >> a;
-                    if(a=='Y'){
+                    if(a=='Y' || a=='y'){
                         g.remove(email);
+                    }
+                    else{
+                        cout << "Operacao cancelada!" << endl;
                     }
                 }
             break;
             case 7:
-
+                
             break;
             case 8:
-
+                g.showdot();
             break;
             case 9:
-
+                cout << "Quantidade de usuarios cadastrados: " << g.nusers() << endl;
+                cout << "Grau medio de entrada: " << g.graumedioentrada() << endl;
+                cout << "Grau medio de saida: " << g.graumediosaida() << endl;
+                cout << "Diâmetro do grafo: " << endl;
+                cout << "Usuario com maior numero de seguidores: " << g.morefollowers()->nome << " (" << g.morefollowers()->email << ")" << endl;
+                cout << "Numero de seguidores: " << g.morefollowers()->seguidores.size() << endl;
+            break;
+            case 0:
+                cout << "Salvando..." << endl;
+                g.saveuser();
+                g.savelinks();
+                return 0;
             break;
             default:
             cout << "Opcao invalida, tente novamente" << endl;
             break;
         }
+        cout << "Pressione Enter para continuar...";
+        cin.ignore();
+        cin.get();
     }
 }
