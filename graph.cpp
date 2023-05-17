@@ -3,6 +3,8 @@
 #include <unordered_map>
 #include <fstream>
 #include <cstdlib>
+#include <fstream>
+#include <algorithm>
 namespace graph{
     class digraph{
         private:
@@ -14,6 +16,7 @@ namespace graph{
             std::string cidade;
             std::vector<std::string> seguidores;
             std::vector<node*> links;
+            bool flag = false;
         };
         std::unordered_map<std::string, node> nodes;
         public:
@@ -120,13 +123,70 @@ namespace graph{
                 std::cout << std::endl;
         }
         void remove(const std::string &e){
-            auto a = find(e);
-            int b = a->seguidores.size();
-            for(int i=0; i<b; i++){
-                auto c = find(a->seguidores[i]);
-                
+            auto a = find(e);               //ENCONTRA O NODE A SER REMOVIDO
+            int b = a->seguidores.size();   //PEGA O TAMANHO DO VECTOR DE SEGUIDORES
+            for(int i=0; i<b; i++){                 
+                auto c = find(a->seguidores[i]);    //ENCONTRA A PESSOA QUE SEGUE ELE
+                int y = c->links.size();            //PEGA O TAMANHO DO VETOR DE SEGUIDORES DESSA PESSOA
+                for(int j=0; j<y; j++){             //PERCORRE OS LINKS DESSA PESSOA
+                    if(c->links[j]==a){             //TESTA SE O LINK É IGUAL AO REMOVIDO
+                        c->links.erase(c->links.begin()+j); ///APAGA O LINK
+                    }
+                }
             }
-            nodes.erase(e);
+            nodes.erase(e);                         //APAGA O NODE
+            std::cout << "Usuario removido!" << std::endl;
+        }
+        int nusers(){
+            int a = nodes.size();
+            return a;
+        }
+
+        void finddistance(const std::string &e, const std::string &f){
+            if(existe(e) && existe(f)){
+            auto a = find(e);
+            auto b = find(f);
+            bool encontrou = false;
+            int distance = 0;
+            
+        }
+        }
+
+        void saveuser(){
+            std::ofstream arquivo("Usuarios.txt");
+            if(arquivo.is_open()){
+                for (const auto& item : nodes){
+                    const struct node& pessoa = item.second;
+                    arquivo << pessoa.email << ","
+                    << pessoa.nome << ","
+                    << pessoa.datanasc << ","
+                    << pessoa.ntelefone << ","
+                    << pessoa.cidade << std::endl;
+                }
+                arquivo.close();
+                std::cout << "Dados gravados no arquivo com sucesso." << std::endl;
+            }
+            else {
+                std::cout << "Erro ao abrir o arquivo." << std::endl;
+            }
+        }
+
+        void savelinks(){
+            std::ofstream arquivo2("Links.txt");
+            if(arquivo2.is_open()){
+                for(const auto& n : nodes){
+                    const node& a = n.second;
+                    const std::string& email = a.email;
+                    for(node* link : a.links){
+                        arquivo2 << email << "," << link->email << std::endl;
+                    }
+                }
+                arquivo2.close();
+                std::cout << "Links armazenados!" << std::endl;
+            }
+            else{
+                std::cout << "Erro ao gravar links!" << std::endl;
+            }
         }
 
         void save2dot(const std::string &filename){
@@ -145,9 +205,44 @@ namespace graph{
             }
             dot << "}\n";
         }
-        /*void show(){
+
+        void showdot(){
             save2dot("/tmp/grafobonito.dot");
             std::system("dot -Tx11 /tmp/grafobonito.dot");
-        }*/
+        }
+
+        int graumedioentrada(){
+            int a=0;
+            int b=0;
+            for(auto n:nodes){
+                a++;
+                b+=n.second.seguidores.size();
+            }
+            return b/a;
+        }
+        int graumediosaida(){
+            int a=0;
+            int b=0;
+            for(auto n:nodes){
+                a++;
+                b+=n.second.links.size();
+            }
+            return b/a;
+        }
+        node* morefollowers(){
+            int maiorNumeroSeguidores = 0;
+            node* usuarioMaiorSeguidores = nullptr;
+
+            for (auto& pair : nodes) {
+                node& usuario = pair.second;
+                int numeroSeguidores = usuario.seguidores.size();
+
+                if (numeroSeguidores > maiorNumeroSeguidores) {
+                    usuarioMaiorSeguidores = &usuario;
+                    maiorNumeroSeguidores = numeroSeguidores;
+                }
+            }
+            return usuarioMaiorSeguidores;
+        }
     };
 }
