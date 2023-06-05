@@ -222,10 +222,45 @@ namespace graph{
             dot << "}\n";
         }
 
-        void showdot(){
-            save2dot("/tmp/grafobonito.dot");
-            std::system("dot -Tx11 /tmp/grafobonito.dot");
-        }
+        void showdot() {
+            std::string dotFilename = "/tmp/grafobonito.dot";
+            std::string outputFilename = "/tmp/grafobonito";           
+            save2dot(dotFilename);
+            std::cout << "DIGITE 1 PARA SALVAR EM PDF" << std::endl;
+            std::cout << "DIGITE 2 PARA SALVAR EM JPEG" << std::endl;
+            std::cout << "DIGITE 3 PARA SALVAR EM PNG" << std::endl; 
+            std::cout << "DIGITE 4 PARA MOSTRAR .DOT" << std::endl;
+            int p;
+            std::cin >> p;
+            switch (p) {
+                case 1:
+                    {
+                        std::string pdfCommand = "dot -Tpdf " + dotFilename + " -o " + outputFilename + ".pdf";
+                        std::system(pdfCommand.c_str());
+                        break;
+                    }
+                case 2:
+                    {
+                        std::string jpegCommand = "dot -Tjpeg " + dotFilename + " -o " + outputFilename + ".jpeg";
+                        std::system(jpegCommand.c_str());
+                        break;
+                    }
+                case 3:
+                    {
+                        std::string pngCommand = "dot -Tpng " + dotFilename + " -o " + outputFilename + ".png";
+                        std::system(pngCommand.c_str());
+                        break;
+                    }
+                case 4:
+                    {
+                        std::system("dot -Tx11 /tmp/grafobonito.dot");
+                    }
+                default:
+                    std::cout << "Opção inválida" << std::endl;
+                    break;
+            }
+    }
+
 
         int graumedioentrada(){
             int a=0;
