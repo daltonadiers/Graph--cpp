@@ -1,4 +1,3 @@
-//---------1 milhao de bibliotecas-----------//
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -10,10 +9,8 @@
 #include <iostream>
 #include <list>
 #include <queue>
+#include <utility>
 //#include <functional> #Passar funcao por parametro
-
-
-
 namespace graph{
     class digraph{
         //--------ESTRUTURAS UTILIZADAS--------//
@@ -305,6 +302,7 @@ namespace graph{
                 }
             }
         }
+        
         void dfs_from(const std::string &from){
             auto p = find(from);
             if(!p) return;
@@ -312,7 +310,7 @@ namespace graph{
             std::cout << std::endl;
             visited.clear();
             }
-            
+
         std::list<node*> bfs(const std::string &from, const std::string &to){
             std::list<node*> path; //lista que será retornada
             auto pfrom = find(from);
@@ -351,19 +349,20 @@ namespace graph{
             return path;
         }
 
-        int diameter() {
-            int d_global = 0;
+    std::list<node*> diameter(){
+            std::list<node*> ans;
             for (const auto& pair : nodes) {
-                int i = diameterbfs(pair.second.email);
-                if (i > d_global) {
-                    d_global = i;
+                auto tam = diameterbfs(pair.second.email);
+                if (tam.size() > ans.size()) {
+                    ans = tam;
                 }
         }
-        return d_global;
+        return ans;
     }
 
-int diameterbfs(const std::string& email) {
+std::list<node*> diameterbfs(const std::string& email) {
     std::list<node*> path2;
+    std::list<node*> path3;
     auto pfrom = find(email);
     int globalbfs = 0;
     for (const auto& pair2 : nodes) {
@@ -399,18 +398,12 @@ int diameterbfs(const std::string& email) {
                 temp = parent2[temp];
             }
         }
-        if (path2.size() > globalbfs) {
-            globalbfs = path2.size();
+        if (path2.size() > path3.size()) {
+            path3 = path2;
         }
     }
-    return globalbfs;
+    return path3;
 }
-
-
-
-
-
-
   //---------------FIM DAS FUNCOES-----------------------------//
     };
 };
