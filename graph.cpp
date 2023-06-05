@@ -1,3 +1,4 @@
+//---------1 milhao de bibliotecas-----------//
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -5,8 +6,17 @@
 #include <cstdlib>
 #include <fstream>
 #include <algorithm>
+#include <unordered_set>
+#include <iostream>
+#include <list>
+#include <queue>
+//#include <functional> #Passar funcao por parametro
+
+
+
 namespace graph{
     class digraph{
+        //--------ESTRUTURAS UTILIZADAS--------//
         private:
         struct node{
             std::string email;
@@ -19,6 +29,8 @@ namespace graph{
             bool flag = false;
         };
         std::unordered_map<std::string, node> nodes;
+        std::unordered_set<node *> visited;
+        //---------------- INICIO DAS FUNCOES ------------------//
         public:
         bool insert_node(std::string eemail, std::string name, std::string datana, std::string ntele, std::string city){
             if(nodes.count(eemail)>0) return false; //se a chave já existir
@@ -114,12 +126,16 @@ namespace graph{
                 std::cout << "Data de nascimento: " << a->datanasc << std::endl;
                 std::cout << "Telefone: " << a->ntelefone << std::endl;
                 std::cout << "Cidade: " << a->cidade << std::endl;
-                std::cout << "Seguindo: ";
+                std::cout << "Seguindo: " << "(" << a->links.size() << ") ";
                 int b = a->links.size();
                 for(int i=0; i<b; i++){
                     std::cout << a->links[i]->email << ", ";
                 }
                 std::cout << std::endl;
+                std::cout << "Seguidores: " << "(" << a->seguidores.size() << ")";
+                for(int j=0; j<b; j++){
+                    std::cout << a->seguidores[j] << ", ";
+                }
                 std::cout << std::endl;
         }
         void remove(const std::string &e){
@@ -244,5 +260,122 @@ namespace graph{
             }
             return usuarioMaiorSeguidores;
         }
-    };
+        int count =0;
+        void visit_dfs_from(node *p){
+            visited.insert(p);
+            std::cout << p->email << std::endl;
+            for(auto n: p->links){
+                if(visited.count(n)==0){
+                    visit_dfs_from(n);
+                }
+            }
+        }
+        void dfs_from(const std::string &from){
+            auto p = find(from);
+            if(!p) return;
+            visit_dfs_from(p);
+            std::cout << std::endl;
+            visited.clear();
+            }
+            
+        std::list<node*> bfs(const std::string &from, const std::string &to){
+            std::list<node*> path; //lista que será retornada
+            auto pfrom = find(from);
+            if(!pfrom) return path;  //se from não existir, retorna lista vazia
+            auto pto = find(to);
+            if(!pto) return path;       //se to não existir, retorna lista vazia
+            bool found = false;
+            std::queue<node *> q;
+            std::unordered_map<node*, node*> parent;
+            q.push(pfrom);
+            visited.clear();
+            visited.insert(pfrom);
+            parent[pfrom] = nullptr;
+            while(!q.empty()){
+                auto current = q.front();
+                q.pop();
+                if(current==pto){
+                found = true;
+                break;
+                }
+                for(auto n : current->links){
+                if(visited.count(n)==0){
+                    visited.insert(n);
+                    parent[n] = current;
+                    q.push(n);
+                }
+                }
+            }
+            if(found){
+                auto p = pto;
+                while(p){
+                path.push_front(p);
+                p = parent[p];
+                }
+            }
+            return path;
+        }
+
+        int diameter() {
+            int d_global = 0;
+            for (const auto& pair : nodes) {
+                int i = diameterbfs(pair.second.email);
+                if (i > d_global) {
+                    d_global = i;
+                }
+        }
+        return d_global;
+    }
+
+int diameterbfs(const std::string& email) {
+    std::list<node*> path2;
+    auto pfrom = find(email);
+    int globalbfs = 0;
+    for (const auto& pair2 : nodes) {
+        auto pto1 = pair2.second.email;
+        auto pto = find(pto1);
+        path2.clear();
+        std::queue<node*> q2;
+        std::unordered_set<node*> visited; // Corrigido: substituído "visited.clear()" por uma nova inicialização
+        std::unordered_map<node*, node*> parent2;
+        bool found = false;
+        q2.push(pfrom);
+        visited.insert(pfrom);
+        parent2[pfrom] = nullptr;
+        while (!q2.empty()) {
+            auto current = q2.front();
+            q2.pop();
+            if (current == pto) {
+                found = true;
+                break;
+            }
+            for (auto n : current->links) {
+                if (visited.count(n) == 0) {
+                    visited.insert(n);
+                    parent2[n] = current;
+                    q2.push(n);
+                }
+            }
+        }
+        if (found) {
+            auto temp = pto;
+            while (temp != nullptr) {
+                path2.push_front(temp);
+                temp = parent2[temp];
+            }
+        }
+        if (path2.size() > globalbfs) {
+            globalbfs = path2.size();
+        }
+    }
+    return globalbfs;
 }
+
+
+
+
+
+
+  //---------------FIM DAS FUNCOES-----------------------------//
+    };
+};
