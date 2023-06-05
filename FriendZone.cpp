@@ -156,7 +156,32 @@ int main(){
                 }
             break;
             case 7:
-                
+            {
+                string email, email2;
+                cout << "Digite o email do primeiro usuário: ";
+                cin >> email;
+                if(!g.existe(email)){
+                    cout << "Email não cadastrado!" << endl;
+                }else{
+                    cout << "Digite o email do segundo usuário: ";
+                    cin >> email2;
+                    if(!g.existe(email2)){
+                        cout << "Email não cadastrado!" << endl;
+                    }else{
+                        auto path = g.bfs(email, email2);
+                        cout << "Tamanho do caminho: " << path.size() << endl;
+                        cout << "Voce deseja imprimir esse caminho? Y OR N ";
+                        char v;
+                        cin >> v;
+                        if(v=='Y' || v=='y'){
+                            for(auto n: path){
+                                cout << "->" << n->email;
+                            }
+                            cout << endl;
+                        }
+                    }
+                }
+            }
             break;
             case 8:
                 g.showdot();
@@ -165,7 +190,7 @@ int main(){
                 cout << "Quantidade de usuarios cadastrados: " << g.nusers() << endl;
                 cout << "Grau medio de entrada: " << g.graumedioentrada() << endl;
                 cout << "Grau medio de saida: " << g.graumediosaida() << endl;
-                cout << "Diâmetro do grafo: " << endl;
+                cout << "Diâmetro do grafo: " << g.diameter() << endl;
                 cout << "Usuario com maior numero de seguidores: " << g.morefollowers()->nome << " (" << g.morefollowers()->email << ")" << endl;
                 cout << "Numero de seguidores: " << g.morefollowers()->seguidores.size() << endl;
             break;
