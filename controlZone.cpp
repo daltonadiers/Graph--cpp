@@ -179,7 +179,7 @@ namespace controlZone{
                                 std::cout << "Email não cadastrado!" << std::endl;
                             }else{
                                 auto path = g.bfs(email, email2);
-                                std::cout << "Tamanho do caminho: " << path.size() << std::endl;
+                                std::cout << "Tamanho do caminho: " << path.size()-1 << std::endl;
                                 std::cout << "Voce deseja imprimir esse caminho? Y OR N ";
                                 char v;
                                 std::cin >> v;
@@ -202,7 +202,7 @@ namespace controlZone{
                         std::cout << "Grau medio de entrada: " << g.graumedioentrada() << std::endl;
                         std::cout << "Grau medio de saida: " << g.graumediosaida() << std::endl;
                         auto aux = g.diameter();
-                        std::cout << "Diâmetro do grafo: " << aux.size() << std::endl;
+                        std::cout << "Diâmetro do grafo: " << aux.size()-1 << std::endl;
                         std::cout << "Usuario com maior numero de seguidores: " << g.morefollowers()->nome << " (" << g.morefollowers()->email << ")" << std::endl;
                         std::cout << "Numero de seguidores: " << g.morefollowers()->seguidores.size() << std::endl;
                         std::cout << "Deseja visualizar o diâmetro do grafo? Y OR N ";
